@@ -18,11 +18,9 @@ def compute_velocity(curvature, grip_force, mass):
 def convert_to_kmh(meters_second):
     """
         Convert m/s to km/h returning a floating value representing
-        velocity in kilometers to hour 
+        velocity in kilometers to hour
 
         Param:
-            -meters_second(floating): meters second velocity 
+            -meters_second(floating): meters second velocity
     """
     return meters_second * 3.6
-
-
