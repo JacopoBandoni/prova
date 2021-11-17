@@ -14,6 +14,12 @@ class TrackMap:
     def set_car_position(self, x: float, y: float):
         self.car_position = (x, y)
 
+    def get_left_cones(self):
+        return self.left_cones
+
+    def get_right_cones(self):
+        return self.right_cones
+
     # TODO: our car is pointing to a direction
     def set_car_orientation(self, orientation: float):
         self.car_orientation = orientation
