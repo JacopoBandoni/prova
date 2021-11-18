@@ -7,12 +7,12 @@ class Track:
     def __init__(self, width: float):
         self.width: float = width                               # width of the track
         self.start: tuple[float, float] = (0, 0)                # starting position from which the track is generated (left part, not centered). 
-                                                                    #Updated when a new part is added (like the tail of a queue)
-        self.direction: float                                    #current direction of the track
+                                                                #Updated when a new part is added (like the tail of a queue)
+        self.direction: float = 0                               #current direction of the track
         self.left_cones: list[tuple[float, float]] = []         #list of left cones
         self.right_cones: list[tuple[float, float]] = []        #list of right cones
 
-    def _straight_track_map(self, length: float, width: float, N_cones: int, start_x: float, start_y: float, direction: int = 0) -> tuple[list[tuple[float, float]], list[tuple[float, float]]]:
+    def _straight_track_map(self, length: float, width: float, N_cones: int, start_x: float, start_y: float, direction: int = 0) -> Tuple[List[Tuple[float, float]], List[Tuple[float, float]]]:
         """Generates a straight track of the given length and width.
 
         Args:
@@ -27,13 +27,12 @@ class Track:
         """
         left_cones: list[tuple[float, float]] = []
         right_cones: list[tuple[float, float]] = []
-        print(length, length // N_cones)
         for i in range(0, length, length // N_cones):
             left_cones.append((start_x, start_y + i))
             right_cones.append((start_x + width, start_y + i))
         return (left_cones, right_cones)
 
-    def _circle_track_map(self, radius: float, degree: int, width: float, N_cones: int, start_x: float, start_y: float, direction: int = 0) -> tuple[list[tuple[float, float]], list[tuple[float, float]]]:
+    def _circle_track_map(self, radius: float, degree: int, width: float, N_cones: int, start_x: float, start_y: float, direction: int = 0) -> Tuple[List[Tuple[float, float]], List[Tuple[float, float]]]:
         """Generates a curve track of the gicen radius, width and degree
 
         Args:
@@ -49,16 +48,16 @@ class Track:
         """
         left_cones: list[tuple[float, float]] = []
         right_cones: list[tuple[float, float]] = []
-        
+        print(start_x, start_y)
         for deg in range(0, degree, degree // N_cones):
             # Inner yellow cones
             x = start_x + radius * math.cos(math.radians(deg))
             y = start_y + radius * math.sin(math.radians(deg))
-            right_cones.append((x, y))
+            left_cones.append((x-radius, y))
             # Outer blue cones
             x = start_x + (radius+width) * math.cos(math.radians(deg))
             y = start_y + (radius+width) * math.sin(math.radians(deg))
-            left_cones.append((x, y))
+            right_cones.append((x-radius, y))
     
         return (left_cones, right_cones)
 
@@ -79,7 +78,7 @@ class Track:
         self.left_cones += new_left_cones
         self.right_cones += new_right_cones
         #setting the start position for the next track part. Note, add +1 to add offset for the next part
-        self.start = (new_left_cones[-1][0]+1, new_left_cones[-1][1]+1)
+        self.start = (new_left_cones[-1][0], new_right_cones[-1][1])
         #setting the new direction in which we have to generate track. 
         self.direction = (self.direction + degrees)%360
 
@@ -93,7 +92,7 @@ class Track:
         self.left_cones += new_left_cones
         self.right_cones += new_right_cones
         #setting the start position for the next track part. Note, add +1 to add offset for the next part
-        self.start = (new_left_cones[-1][0]+1, new_left_cones[-1][1]+1)
+        self.start = (new_left_cones[-1][0], new_right_cones[-1][1])
 
     def plot_track(self):
         """plot the current track
@@ -110,7 +109,7 @@ class Track:
         plt.scatter(right_x, right_y, color='yellow', label='Right Cones')
         plt.show()
 
-    def get_left_cones(self) -> list[tuple[float, float]]:
+    def get_left_cones(self) -> List[Tuple[float, float]]:
         """returns left cones
 
         Returns:
@@ -118,7 +117,7 @@ class Track:
         """
         return self.left_cones
     
-    def get_right_cones(self) -> list[tuple[float, float]]:
+    def get_right_cones(self) -> List[Tuple[float, float]]:
         """returns left cones
 
         Returns:
