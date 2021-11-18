@@ -4,16 +4,17 @@
 - Data una traiettoria trovare gli angoli che uniscono i vari punti (sterzo)
 - Visualizzare traiettoria (magari con video?)
 """
-
 from typing import List
 from TrackMap import TrackMap
 from PlanStep import PlanStep
 
-# Given a cone find the closest cone in the 'list_of_cones'
-def find_closest(cone, list_of_cones, start_it):
-    def compute_distance(x1, x2):
+
+def compute_distance(x1, x2):
         return pow(x2[0] - x1[0], 2) + pow(x2[1] - x1[1], 2)
 
+
+# Given a cone find the closest cone in the 'list_of_cones'
+def find_closest(cone, list_of_cones, start_it):
     iterator_cones = start_it
     distance = compute_distance(cone, list_of_cones[iterator_cones])
     min_distance = distance
@@ -31,9 +32,11 @@ def find_closest(cone, list_of_cones, start_it):
     return iterator_cones
 
 
-def compute_middle_trajectory(track_map: TrackMap) -> List[PlanStep]:
-    def compute_middle_point(x1, x2):
+def compute_middle_point(x1, x2):
         return ((x1[0] + x2[0])/2, (x1[1] + x2[1])/2)
+
+
+def compute_middle_trajectory(track_map: TrackMap) -> List[PlanStep]:
     cones_left = track_map.get_left_cones()
     cones_right = track_map.get_right_cones()
     trajectory = []

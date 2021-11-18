@@ -3,16 +3,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from SampleTrack import CircleTrackMap
 from MidTrajectory import compute_middle_trajectory
-from Utils import plot_track_map_and_trajectory, compute_spline
+from Utils import plot_track_map, plot_trajectory, end_plotting
+from ComputeVelocities import compute_velocities
 
-straight_track_map = CircleTrackMap(100, 10, 25, 5, 10)
-straight_track_map.set_car_position(10, 10)
-mid_trajectory = compute_middle_trajectory(straight_track_map)
+circle_track_map = CircleTrackMap(100, 10, 25, 5, 10)
+circle_track_map.set_car_position(10, 10)
 
-f = compute_spline(mid_trajectory)
-# xs = [plan_step.position[0] for plan_step in mid_trajectory]
-# ys = [plan_step.position[1] for plan_step in mid_trajectory]
-# z = f(xs, ys)
-# plt.scatter()
+mid_trajectory = compute_middle_trajectory(circle_track_map)
 
-plot_track_map_and_trajectory(straight_track_map, mid_trajectory)
+trajectory = compute_velocities(mid_trajectory)
+
+plot_track_map(circle_track_map, new_figure=True)
+plot_trajectory(trajectory, new_figure=False)
+
+end_plotting()
