@@ -22,6 +22,7 @@ def find_closest(cone, list_of_cones, start_it):
     while (iterations < len(list_of_cones)):
         distance = compute_distance(cone, list_of_cones[(iterator_cones+1) % len(list_of_cones)])
         if distance < min_distance:
+            min_distance = distance
             iterator_cones = (iterator_cones + 1) % len(list_of_cones)
             iterations+=1
         else:
@@ -30,7 +31,6 @@ def find_closest(cone, list_of_cones, start_it):
     return iterator_cones
 
 
-# TODO: There is a bug, enjoy :D
 def compute_middle_trajectory(track_map: TrackMap) -> List[PlanStep]:
     def compute_middle_point(x1, x2):
         return ((x1[0] + x2[0])/2, (x1[1] + x2[1])/2)
