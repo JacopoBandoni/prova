@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import matplotlib.pyplot as plt
 import math
+import json
 
 class Track:
 
@@ -124,6 +125,14 @@ class Track:
             list[tuple[float, float]: list of right cones
         """
         return self.right_cones
+    
+    def load_track(self, file_path):
+        with open(file_path) as f:
+            data = json.load(f)
+        for yellow_cone in data['yellow_cones']:
+            self.left_cones.append((yellow_cone['x'], yellow_cone['y']))
+        for green_cone in data['green_cones']:
+            self.right_cones.append((green_cone['x'], green_cone['y']))
 
 if __name__ == '__main__':
     track = Track(5)
