@@ -13,14 +13,17 @@ from scipy.special import comb
 def compute_spline(points: List[PlanStep]):
     xs = [plan_step.position[0] for plan_step in points]
     ys = [plan_step.position[1] for plan_step in points]
-    
-    xs, ys = zip(*list(set(zip(xs, ys))))
+
+    # TODO: Assert that there are no duplicated points.
+    #       Note before we were just deleting them without removing them from the 'points': List[PlanStep]
+    #       This caused a bug in the compute_velocities since we iterate over the points but'll have less
+    #       derivative points => Causing an Out of bounds error
 
     tck,u=interpolate.splprep([xs,ys],s=0.0)
 
-    x_i,y_i= interpolate.splev(np.linspace(0,1,len(points)),tck)
-    dx_i,dy_i= interpolate.splev(np.linspace(0,1,len(points)),tck, der=1)
-    ddx_i,ddy_i= interpolate.splev(np.linspace(0,1,len(points)),tck, der=2)
+    x_i,y_i= interpolate.splev(u,tck)
+    dx_i,dy_i= interpolate.splev(u,tck, der=1)
+    ddx_i,ddy_i= interpolate.splev(u,tck, der=2)
 
     return x_i,y_i,dx_i,dy_i,ddx_i,ddy_i
 

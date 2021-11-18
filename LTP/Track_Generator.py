@@ -78,7 +78,7 @@ class Track:
         self.left_cones += new_left_cones
         self.right_cones += new_right_cones
         #setting the start position for the next track part. Note, add +1 to add offset for the next part
-        self.start = (new_left_cones[-1][0], new_right_cones[-1][1])
+        self.start = (new_left_cones[-1][0]+1, new_right_cones[-1][1]+1)
         #setting the new direction in which we have to generate track. 
         self.direction = (self.direction + degrees)%360
 
@@ -92,7 +92,7 @@ class Track:
         self.left_cones += new_left_cones
         self.right_cones += new_right_cones
         #setting the start position for the next track part. Note, add +1 to add offset for the next part
-        self.start = (new_left_cones[-1][0], new_right_cones[-1][1])
+        self.start = (new_left_cones[-1][0]+1, new_right_cones[-1][1]+1)
 
     def plot_track(self):
         """plot the current track
