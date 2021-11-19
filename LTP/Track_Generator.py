@@ -131,8 +131,8 @@ class Track:
             data = json.load(f)
         for yellow_cone in data['yellow_cones']:
             self.left_cones.append((yellow_cone['x'], yellow_cone['y']))
-        for green_cone in data['green_cones']:
-            self.right_cones.append((green_cone['x'], green_cone['y']))
+        for blue_cone in data['blue_cones']:
+            self.right_cones.append((blue_cone['x'], blue_cone['y']))
 
 if __name__ == '__main__':
     track = Track(5)

@@ -1,7 +1,11 @@
 """
     Constants about the car
 """
-MASS = 231.1 #kg
+
+# TODO: Check this computations, also consider adding a security factor in case we want to actually drive the car
+#       and not just simulate it.
+MASS = 231.1#kg
+
 
 WIDTH = 1.45 # m
 LENGTH = 2.5 # m
@@ -23,6 +27,10 @@ MAX_THEORETICAL_FORWARD_FORCE = 2e3 # [N]
 MAX_ACCELERATION_FORCE = min(MAX_THEORETICAL_FORWARD_FORCE, F_GRIP) # [N]
 
 MAX_ACCELERATION = MAX_ACCELERATION_FORCE / MASS # [m/s^2]
+
+MAX_DECELERATION = -MAX_ACCELERATION # [m/s^2] (We assume that our breaks can generate this much deceleration)
+
+
 
 
 """
