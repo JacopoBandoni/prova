@@ -8,8 +8,7 @@ from ComputeVelocities import compute_velocities
 from TrackMap import TrackMap
 
 custom_track = Track(10)
-custom_track.add_straight(20, 20)
-custom_track.add_curve(50, 180, 10)
+custom_track.load_track('track.json')
 
 track_map = TrackMap(custom_track.get_left_cones(), custom_track.get_right_cones())
 

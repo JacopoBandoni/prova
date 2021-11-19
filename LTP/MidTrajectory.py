@@ -7,9 +7,7 @@
 from typing import List
 from TrackMap import TrackMap
 from PlanStep import PlanStep
-
-def compute_distance(x1, x2):
-    return ((x1[0] - x2[0])**2 + (x1[1] - x2[1])**2)**0.5
+from Utils import compute_distance
 
 def find_closest_point(point, points):
     min_distance = compute_distance(point, points[0])

@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import comb
 
+def compute_distance(x1, x2):
+    return ((x1[0] - x2[0])**2 + (x1[1] - x2[1])**2)**0.5
 
 def compute_spline(points: List[PlanStep]):
     xs = [plan_step.position[0] for plan_step in points]
