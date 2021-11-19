@@ -18,11 +18,17 @@ def euclidean_distance(point_1, point_2):
     """
     return ((point_1[0] - point_2[0])**2 + (point_1[1] - point_2[1])**2)**0.5
 
-def find_closest_point(point, points, distance_function=euclidean_distance):
+def euclidean_distance_no_sqrt(point_1, point_2):
+    """
+        Compute the "euclidean" distance (without sqrt) between two points
+    """
+    return (point_1[0] - point_2[0])**2 + (point_1[1] - point_2[1])**2
+
+def find_closest_point(point, points, distance_function=euclidean_distance_no_sqrt):
     """
         Find the closest point to a given point
     """
-    min_distance = euclidean_distance(point, points[0])
+    min_distance = distance_function(point, points[0])
     min_index = 0
     for index, candidate_point in enumerate(points):
         distance = distance_function(point, candidate_point)
