@@ -7,7 +7,7 @@ from typing import List
 from PlanStep import PlanStep
 from Utils import compute_spline, compute_distance
 from math import sqrt
-from CAR_CONSTANTS import MAX_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION, F_GRIP, MIN_VELOCITY, MASS
+from car_constants import MAX_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION, F_GRIP, MIN_VELOCITY, MASS
 
 # We need to reduce the final velocity
 # 0.5 * a * t^2 + v_1 * t + (curr_pos - next_pos) = 0
