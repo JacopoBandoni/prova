@@ -14,28 +14,32 @@ from car_constants import MAX_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION, F_GR
 # t = (-v_1 +- sqrt(v_1^2 - 2*a*(curr_pos - next_pos))) / a
 # v_f = v_1 + a*t
 def reduce_final_velocity(current_pos, next_pos, current_velocity, max_acceleration):
-    new_time = (-current_velocity + sqrt(current_velocity**2 - 2*max_acceleration*(compute_distance(current_pos, next_pos)))) / max_acceleration
+    new_time = (-2*current_velocity + sqrt((2*current_velocity)**2 + 8*max_acceleration * compute_distance(current_pos, next_pos))) / (2*max_acceleration)
     new_velocity = current_velocity + max_acceleration * new_time
     return new_velocity
 
 def bound_velocities(trajectory: List[PlanStep], max_velocity, min_velocity, max_acceleration, max_deceleration) -> List[PlanStep]:
     new_trajectory = list(trajectory)
+    # TODO: note the 2*len(trajectory) makes sense only in a closed loop (is this assumption correct?)
     for i in range(0, 2*len(trajectory)):
         # We check if from the current velocity and position we can reach the next velocity given the car constraints
-        current_pos = trajectory[i % len(trajectory)].position
-        next_pos = trajectory[(i+1) % len(trajectory)].position
-        current_velocity = trajectory[i % len(trajectory)].velocity
-        next_velocity = trajectory[(i+1) % len(trajectory)].velocity
-        time = compute_distance(current_pos, next_pos) / current_velocity
+        current_pos = new_trajectory[i % len(new_trajectory)].position
+        next_pos = new_trajectory[(i+1) % len(new_trajectory)].position
+        current_velocity = new_trajectory[i % len(new_trajectory)].velocity
+        next_velocity = new_trajectory[(i+1) % len(new_trajectory)].velocity
+        avg_velocity = (current_velocity + next_velocity) / 2
+        time = compute_distance(current_pos, next_pos) / avg_velocity
         required_acc = (next_velocity - current_velocity) / time # v_f = v_i + a*t => a = v_f - v_i / t
         if required_acc > max_acceleration:
-            # 10km/h  --> 130km/h (2 metri) cambi in 50km/h
+            # Given the max_acceleration of our car we cannot reach the final velocity
+            # We then decrease the final velocity to the highest velocity we can reach
             new_velocity = reduce_final_velocity(current_pos, next_pos, current_velocity, max_acceleration)
             print(f"Reducing final velocity from {new_trajectory[(i+1) % len(trajectory)].velocity} to {new_velocity}")
             new_trajectory[(i+1) % len(trajectory)].velocity = new_velocity
         elif -max_deceleration < required_acc:
-            # 140km/h  ->  (50km/h)  --> 130km/h cambi in 50
-            print(next_pos, current_pos, current_velocity, next_velocity, -max_deceleration)
+            # Given the max_deceleration of our car we cannot slow down to the final velocity
+            # We then decrease the final velocity to the highest velocity we can reach starting from the final point
+            # and assuming that our acceleration is the negative of the maximum deceleration
             new_velocity = reduce_final_velocity(next_pos, current_pos, next_velocity, -max_deceleration)
             print(f"Reducing initial velocity from {new_trajectory[i % len(trajectory)].velocity} to {new_velocity}")
             new_trajectory[i % len(trajectory)].velocity = new_velocity
