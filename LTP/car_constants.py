@@ -1,5 +1,7 @@
-
-MASS = 231.1
+"""
+    Constants about the car
+"""
+MASS = 231.1 #kg
 
 WIDTH = 1.45 # m
 LENGTH = 2.5 # m
@@ -16,7 +18,8 @@ F_GRIP = FRICTION * MASS * GRAVITY # [N] (0.6 * 231.1 * 9.81 = 1360,2546 [N])
 
 MAX_THEORETICAL_FORWARD_FORCE = 2e3 # [N]
 
-# We take the minimum between the theoretical maximum forward force and the maximum supported force by the grip of the tires.
+# We take the minimum between the theoretical maximum forward force
+# and the maximum supported force by the grip of the tires.
 MAX_ACCELERATION_FORCE = min(MAX_THEORETICAL_FORWARD_FORCE, F_GRIP) # [N]
 
 MAX_ACCELERATION = MAX_ACCELERATION_FORCE / MASS # [m/s^2]
