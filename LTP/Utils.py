@@ -37,6 +37,8 @@ def find_line(p1, p2):
         b = p1[1] - m * p1[0]
         return (m, b)
 
+def plot_line(x1, y1, x2, y2):
+    plt.plot([x1, x2], [y1, y2])
 
 def plot_track_map(track_map, new_figure=True):
     if new_figure:
@@ -46,6 +48,13 @@ def plot_track_map(track_map, new_figure=True):
     plt.ylabel('y')
     plt.scatter([x for x, _ in track_map.left_cones], [y for _, y in track_map.left_cones], color='blue', label='Left Cones')
     plt.scatter([x for x, _ in track_map.right_cones], [y for _, y in track_map.right_cones], color='yellow', label='Right Cones')
+    # Plot starting point
+    plt.scatter(track_map.left_cones[0][0], track_map.left_cones[0][1], color='black')
+    plt.scatter(track_map.right_cones[0][0], track_map.right_cones[0][1], color='black')
+    
+    plot_line(track_map.left_cones[0][0], track_map.left_cones[0][1], track_map.left_cones[1][0], track_map.left_cones[1][1])
+    plot_line(track_map.right_cones[0][0], track_map.right_cones[0][1], track_map.right_cones[1][0], track_map.right_cones[1][1])
+
     if track_map.car_position is not None:
         plt.scatter(track_map.car_position[0], track_map.car_position[1], color='red', label='Car Position')
     plt.draw()

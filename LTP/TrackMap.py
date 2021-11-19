@@ -5,6 +5,20 @@
 from typing import List, Tuple
 import matplotlib.pyplot as plt
 
+def remove_duplicates(lst: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+    new_list = []
+    def is_equal(x1, x2):
+        return x1[0] == x2[0] and x1[1] == x2[1]
+    for i in range(len(lst)):
+        count = 0
+        for j in range(i+1, len(lst)):
+            if is_equal(lst[i], lst[j]):
+                count += 1
+        if count == 0:
+            new_list.append(lst[i])
+    print(f"Initial lenght = {len(lst)} reduced to {len(new_list)}")
+    return new_list
+
 class TrackMap:
     """
         Represent a Track Map defined by the left and right cones positions
@@ -13,8 +27,8 @@ class TrackMap:
     """
     def __init__(self, left_cones: List[Tuple[float, float]],
                  right_cones: List[Tuple[float, float]]):
-        self.left_cones = list(set(left_cones))
-        self.right_cones = list(set(right_cones))
+        self.left_cones = remove_duplicates(left_cones)
+        self.right_cones = remove_duplicates(right_cones)
         self.car_position = None
         self.car_orientation = 0.0
 
