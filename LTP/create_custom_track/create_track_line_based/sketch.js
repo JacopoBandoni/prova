@@ -69,6 +69,7 @@ function draw() {
       }
     }
     computed = true
+    console.log(yellow_cones.length, blue_cones.length)
   }
   
   //print the cones
