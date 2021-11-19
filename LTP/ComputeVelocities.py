@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from typing import List
 from PlanStep import PlanStep
 from Utils import compute_spline, compute_distance
-from math import sqrt
+from math import sqrt, atan2, sin, cos
 from car_constants import MAX_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION, F_GRIP, MIN_VELOCITY, MASS
 
 # We need to reduce the final velocity
@@ -87,6 +87,19 @@ def compute_curvature(f_x: float, f_y: float, df_x: float, df_y: float, ddf_x: f
 #     """
 #     return (df_x**2 + df_y**2)**3 / (df_x * ddf_y - df_y * ddf_x)**2
 
+# TODO: Check if this is correct
+def compute_angles(trajectory: List[PlanStep]) -> List[PlanStep]:
+    for i in range(0, len(trajectory)):
+        current_pos = trajectory[i].position
+        next_pos = trajectory[(i+1) % len(trajectory)].position
+        current_velocity = trajectory[i].velocity
+        angle = atan2(next_pos[1] - current_pos[1], next_pos[0] - current_pos[0])
+        v_x = current_velocity * cos(angle)
+        v_y = current_velocity * sin(angle)
+        trajectory[i].velocity_vector = (v_x, v_y)
+    return trajectory
+
+
 def compute_velocities(trajectory: List[PlanStep]) -> List[PlanStep]:
     """
     Compute the velocities of the trajectory.
@@ -106,4 +119,4 @@ def compute_velocities(trajectory: List[PlanStep]) -> List[PlanStep]:
     # Compute avg curvature
     avg_curvature = sum(curvatures) / len(curvatures)
     print(avg_curvature)
-    return bound_velocities(new_trajectory, MAX_VELOCITY, MIN_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION)
+    return compute_angles(bound_velocities(new_trajectory, MAX_VELOCITY, MIN_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION))
