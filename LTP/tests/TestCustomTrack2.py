@@ -12,7 +12,7 @@ custom_track.load_track('track.json')
 
 track_map = TrackMap(custom_track.get_left_cones(), custom_track.get_right_cones())
 
-track_map.set_car_position(5, 0)
+track_map.set_car_position(298, 235)
 trajectory = MidTrajectory()
 trajectory.compute_trajectory(track_map)
 

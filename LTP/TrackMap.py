@@ -13,8 +13,8 @@ class TrackMap:
     """
     def __init__(self, left_cones: List[Tuple[float, float]],
                  right_cones: List[Tuple[float, float]]):
-        self.left_cones = left_cones
-        self.right_cones = right_cones
+        self.left_cones = list(set(left_cones))
+        self.right_cones = list(set(right_cones))
         self.car_position = None
         self.car_orientation = 0.0
 

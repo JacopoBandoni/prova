@@ -1,7 +1,6 @@
 """
     Utility module used to define utility functions
 """
-import numpy as np
 
 def convert_to_kmh(meters_second):
     """
