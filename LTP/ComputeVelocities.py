@@ -87,7 +87,6 @@ def compute_curvature(f_x: float, f_y: float, df_x: float, df_y: float, ddf_x: f
 #     """
 #     return (df_x**2 + df_y**2)**3 / (df_x * ddf_y - df_y * ddf_x)**2
 
-# TODO: Check if this is correct
 def compute_angles(trajectory: List[PlanStep]) -> List[PlanStep]:
     for i in range(0, len(trajectory)):
         current_pos = trajectory[i].position
