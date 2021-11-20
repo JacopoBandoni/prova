@@ -13,3 +13,6 @@ class PlanStep:
         self.position = position
         self.velocity = velocity
         self.velocity_vector = []
+
+    def __str__(self):
+        return "PlanStep(position={}, velocity={}, velocity_vector={})".format(self.position, self.velocity, self.velocity_vector)

@@ -20,7 +20,6 @@ def remove_duplicates(lst: List[Tuple[float, float]]) -> List[Tuple[float, float
                 count += 1
         if count == 0:
             new_list.append(lst[i])
-    print(f"Initial lenght = {len(lst)} reduced to {len(new_list)}")
     return new_list
 
 class TrackMap:
