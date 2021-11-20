@@ -1,23 +1,87 @@
-from typing import List
+from typing import List, Tuple
 from PlanStep import PlanStep
 from TrackMap import TrackMap
 import matplotlib.pyplot as plt
 from scipy import interpolate
 import matplotlib.pyplot as plt
+import json
 
-def compute_distance(x1, x2):
-    return ((x1[0] - x2[0])**2 + (x1[1] - x2[1])**2)**0.5
+"""
+    Utility module used to define utility functions
+"""
+
+def convert_to_kmh(meters_second):
+    """
+        Convert m/s to km/h returning a floating value representing
+        velocity in kilometers to hour
+
+        Param:
+            -meters_second(floating): meters second velocity
+    """
+    return meters_second * 3.6
+
+def euclidean_distance(point_1, point_2):
+    """
+        Compute the euclidean distance between two points
+    """
+    return ((point_1[0] - point_2[0])**2 + (point_1[1] - point_2[1])**2)**0.5
+
+def euclidean_distance_no_sqrt(point_1, point_2):
+    """
+        Compute the "euclidean" distance (without sqrt) between two points
+    """
+    return (point_1[0] - point_2[0])**2 + (point_1[1] - point_2[1])**2
+
+def compute_distance(point_1: tuple[float,float], point_2: tuple[float, float], distance_function=euclidean_distance) -> float:
+    """compute the distance between two points
+
+    Args:
+        x1 (tuple[float,float]): [description]
+        x2 (tuple[float, float]): [description]
+        distance_function ([type], optional): [description]. Defaults to euclidean_distance.
+
+    Returns:
+        float: [description]
+    """
+    return distance_function(point_1, point_2)
+
+def find_closest_point(point, points, distance_function=euclidean_distance_no_sqrt) -> int:
+    """find the closest point to point in points
+
+    Args:
+        point ([type]): [description]
+        points ([type]): [description]
+        distance_function ([type], optional): [description]. Defaults to euclidean_distance_no_sqrt.
+
+    Returns:
+        int: [description]
+    """
+    min_distance = distance_function(point, points[0])
+    min_index = 0
+    for index, candidate_point in enumerate(points):
+        distance = distance_function(point, candidate_point)
+        if distance < min_distance:
+            min_distance = distance
+            min_index = index
+    return min_index
+
+def compute_middle_point(left_point, right_point):
+    """
+        Find the middle point given two points
+    """
+    return (left_point[0] + right_point[0]) / 2, (left_point[1] + right_point[1]) / 2
 
 def compute_spline(points: List[PlanStep]):
+    """compute spline function given a list of PlanStep
+
+    Args:
+        points (List[PlanStep]): set of PlanStep
+
+    Returns:
+        [type]: [description]
+    """
     xs = [plan_step.position[0] for plan_step in points]
     ys = [plan_step.position[1] for plan_step in points]
-
-    # TODO: Assert that there are no duplicated points.
-    #       Note before we were just deleting them without removing them from the 'points': List[PlanStep]
-    #       This caused a bug in the compute_velocities since we iterate over the points but'll have less
-    #       derivative points => Causing an Out of bounds error
-    print(len(list(zip(xs, ys))))
-    print(len(list(set(zip(xs, ys)))))
 
     tck,u=interpolate.splprep([xs,ys],s=0.0)
 
@@ -27,9 +91,16 @@ def compute_spline(points: List[PlanStep]):
 
     return x_i,y_i,dx_i,dy_i,ddx_i,ddy_i
 
-
-# Find line between two points
 def find_line(p1, p2):
+    """Find line between two points
+
+    Args:
+        p1 ([type]): [description]
+        p2 ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     if p1[0] == p2[0]:
         return (p1[0], None)
     else:
@@ -37,55 +108,25 @@ def find_line(p1, p2):
         b = p1[1] - m * p1[0]
         return (m, b)
 
-def plot_line(x1, y1, x2, y2):
-    plt.plot([x1, x2], [y1, y2])
 
-def plot_track_map(track_map, new_figure=True):
-    if new_figure:
-        plt.figure()
-    plt.title('Track Map')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.scatter([x for x, _ in track_map.left_cones], [y for _, y in track_map.left_cones], color='blue', label='Left Cones')
-    plt.scatter([x for x, _ in track_map.right_cones], [y for _, y in track_map.right_cones], color='yellow', label='Right Cones')
-    # Plot starting point
-    plt.scatter(track_map.left_cones[0][0], track_map.left_cones[0][1], color='black')
-    plt.scatter(track_map.right_cones[0][0], track_map.right_cones[0][1], color='black')
-    
-    plot_line(track_map.left_cones[0][0], track_map.left_cones[0][1], track_map.left_cones[1][0], track_map.left_cones[1][1])
-    plot_line(track_map.right_cones[0][0], track_map.right_cones[0][1], track_map.right_cones[1][0], track_map.right_cones[1][1])
+def serialize_to_file(left_cones: List[Tuple[float, float]], right_cones: List[Tuple[float, float]], trajectory: List[PlanStep], file_name: str):
+    d = {
+        'left_cones': {
+            'x': list(map(lambda x: x[0], left_cones)),
+            'y': list(map(lambda x: x[1], left_cones))
+        },
+        'right_cones': {
+            'x': list(map(lambda x: x[0], right_cones)),
+            'y': list(map(lambda x: x[1], right_cones))
+        },
+        'trajectory': {
+            'positions': {
+                'x': list(map(lambda x: x.position[0], trajectory)),
+                'y': list(map(lambda x: x.position[1], trajectory))
+            },
+            'velocities': list(map(lambda x: x.velocity, trajectory)),
+        }
+    }
 
-    if track_map.car_position is not None:
-        plt.scatter(track_map.car_position[0], track_map.car_position[1], color='red', label='Car Position')
-    plt.draw()
-
-def plot_trajectory(trajectory: List[PlanStep], new_figure=False):
-    if new_figure:
-        plt.figure()
-    plt.title('Trajectory')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    velocities = list(map(lambda x: x*3.6, [plan_step.velocity for plan_step in trajectory]))
-    plt.scatter([plan_step.position[0] for plan_step in trajectory], [plan_step.position[1] for plan_step in trajectory], c=velocities, label='velocity (km/h)')
-    plt.legend()
-    plt.colorbar()
-    plt.draw()
-
-# Given a TrackMap and a trajectory plot them
-def plot_track_map_and_trajectory(track_map: TrackMap, trajectory: List[PlanStep], new_figure=True):
-    if new_figure:
-        plt.figure()
-    plt.title('Track Map')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.scatter([x for x, _ in track_map.left_cones], [y for _, y in track_map.left_cones], color='blue', label='Left Cones')
-    plt.scatter([x for x, _ in track_map.right_cones], [y for _, y in track_map.right_cones], color='yellow', label='Right Cones')
-    if track_map.car_position is not None:
-        plt.scatter(track_map.car_position[0], track_map.car_position[1], color='red', label='Car Position')
-    # Plot trajectory
-    plt.scatter([plan_step.position[0] for plan_step in trajectory], [plan_step.position[1] for plan_step in trajectory], color='green', label='Trajectory')
-    plt.legend()
-    plt.draw()
-
-def end_plotting():
-    plt.show()
+    with open(file_name + ".JSON", 'w') as f:
+        json.dump(d, f)

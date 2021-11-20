@@ -1,13 +1,11 @@
-import os, sys
-
-from Utils import compute_distance
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# import os, sys
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from typing import List
 from PlanStep import PlanStep
 from Utils import compute_spline, compute_distance
 from math import sqrt, atan2, sin, cos
-from car_constants import MAX_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION, F_GRIP, MIN_VELOCITY, MASS
+from CarConstants import MAX_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION, F_GRIP, MIN_VELOCITY, MASS
 
 # We need to reduce the final velocity
 # 0.5 * a * t^2 + v_1 * t + (curr_pos - next_pos) = 0
@@ -57,35 +55,21 @@ def compute_velocity(curvature: float, grip_force: float, mass: float, max_veloc
     """
     return min(sqrt((grip_force * curvature) / mass), max_velocity)
 
-# TODO: Change function name to compute_radius or return just K and then use 1/K when you want the radius
-def compute_curvature(f_x: float, f_y: float, df_x: float, df_y: float, ddf_x: float, ddf_y: float) -> float:
+def compute_radius(f_x: float, f_y: float, df_x: float, df_y: float, ddf_x: float, ddf_y: float) -> float:
     """
-    Compute the curvature of the trajectory
+    Compute the radius of the trajectory
     :param f_x: f(x)
     :param f_y: f(y)
     :param df_x: first derivative of x
     :param df_y: first derivative of y
     :param ddf_x: second derivative of x
     :param ddf_y: second derivative of y
-    :return: the curvature of the trajectory
+    :return: the radius of the trajectory
     """
     num = abs(df_x * ddf_y - df_y * ddf_x)
     den = (df_x**2 + df_y**2)**(3/2)
     K = num / den
     return 1/K
-
-# def compute_curvature(f_x: float, f_y: float, df_x: float, df_y: float, ddf_x: float, ddf_y: float) -> float:
-#     """
-#     Compute the curvature of the trajectory
-#     :param f_x: f(x)
-#     :param f_y: f(y)
-#     :param df_x: first derivative of x
-#     :param df_y: first derivative of y
-#     :param ddf_x: second derivative of x
-#     :param ddf_y: second derivative of y
-#     :return: the curvature of the trajectory
-#     """
-#     return (df_x**2 + df_y**2)**3 / (df_x * ddf_y - df_y * ddf_x)**2
 
 def compute_angles(trajectory: List[PlanStep]) -> List[PlanStep]:
     for i in range(0, len(trajectory)):
@@ -108,14 +92,29 @@ def compute_velocities(trajectory: List[PlanStep]) -> List[PlanStep]:
     # We need the first and second derivative of the trajectory to compute the Curvature needed
     # for the maximum velocity
     f_x, f_y, df_x, df_y, ddf_x, ddf_y = compute_spline(trajectory)
-    curvatures = []
+    radii = []
     new_trajectory = list(trajectory)
     for i in range(0, len(trajectory)):
-        curvature = compute_curvature(f_x[i], f_y[i], df_x[i], df_y[i], ddf_x[i], ddf_y[i])
-        curvatures.append(curvature)
+        curvature = compute_radius(f_x[i], f_y[i], df_x[i], df_y[i], ddf_x[i], ddf_y[i])
+        radii.append(curvature)
         new_trajectory[i].velocity = compute_velocity(curvature, F_GRIP, MASS, MAX_VELOCITY)
-    print("R at each point:")
+    print("avg R at each point:")
     # Compute avg curvature
-    avg_curvature = sum(curvatures) / len(curvatures)
-    print(avg_curvature)
+    avg_radius = sum(radii) / len(radii)
+    print(avg_radius)
     return compute_angles(bound_velocities(new_trajectory, MAX_VELOCITY, MIN_VELOCITY, MAX_ACCELERATION, MAX_DECELERATION))
+
+def compute_time(trajectory: List[PlanStep]) -> float:
+    """
+    Compute the minimum time of a given trajectory
+    """
+    print('computing time')
+    time = 0
+    for i in range(trajectory):
+        current_pos = trajectory[i].position
+        next_pos = trajectory[(i+1) % len(trajectory)].position
+        current_velocity = trajectory[i].velocity
+        next_velocity = trajectory[(i+1) % len(trajectory)].velocity
+        avg_velocity = (current_velocity + next_velocity) / 2
+        time += compute_distance(current_pos, next_pos) / avg_velocity
+    return time

@@ -2,8 +2,8 @@ import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from SampleTrack import StraightTrackMap
-from MidTrajectory import MidTrajectory
-from Utils import plot_track_map, plot_trajectory, end_plotting
+from Trajectory import MidTrajectory
+from GraphicUtility import plot_track_map, plot_trajectory, end_plotting
 from ComputeVelocities import compute_velocities
 
 straight_track_map = StraightTrackMap(100, 10, 25, 5, 10)

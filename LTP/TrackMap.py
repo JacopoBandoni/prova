@@ -4,8 +4,12 @@
 
 from typing import List, Tuple
 import matplotlib.pyplot as plt
+import json
 
 def remove_duplicates(lst: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+    """
+        remove duplicates cone from a list of cones
+    """
     new_list = []
     def is_equal(x1, x2):
         return x1[0] == x2[0] and x1[1] == x2[1]
@@ -25,19 +29,24 @@ class TrackMap:
         Each cone is represented by a tuple (x, y) which represent its position
         inside a Cartesian Plane.
     """
-    def __init__(self, left_cones: List[Tuple[float, float]],
-                 right_cones: List[Tuple[float, float]]):
+    def __init__(self, left_cones: List[Tuple[float, float]] = [], right_cones: List[Tuple[float, float]] = []):
         self.left_cones = remove_duplicates(left_cones)
         self.right_cones = remove_duplicates(right_cones)
         self.car_position = None
-        self.car_orientation = 0.0
 
-    def set_car_position(self, pos_x: float, pos_y: float):
+    def load_track(self, file_path):
         """
-            Update Car Position
+            Load a json file containing the left and right cones to initialize class' values
         """
-        self.car_position = (pos_x, pos_y)
-
+        with open(file_path) as f:
+            data = json.load(f)
+        for yellow_cone in data['yellow_cones']:
+            self.left_cones.append((yellow_cone['x'], yellow_cone['y']))
+        for blue_cone in data['blue_cones']:
+            self.right_cones.append((blue_cone['x'], blue_cone['y']))
+        self.left_cones = remove_duplicates(self.left_cones)
+        self.right_cones = remove_duplicates(self.right_cones)
+    
     def get_left_cones(self):
         """
             Obtain all Left cones inside the TrackMap
@@ -49,10 +58,19 @@ class TrackMap:
             Obtain all Right Cones inside the TrackMap
         """
         return self.right_cones
+    
+    def set_car_position(self, coordinate):
+        """set the car position
 
-    # TODO: our car is pointing to a direction
-    def set_car_orientation(self, orientation: float):
-        self.car_orientation = orientation
+        Args:
+            coordinate ([type]): [description]
+        """
+        self.car_position = coordinate
+    
+    def get_car_position(self):
+        """
+            return car position
+        """
 
     def show(self):
         """

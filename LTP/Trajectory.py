@@ -2,9 +2,10 @@
 """
     Module MidTrajectory will compute the trajectory of the car
 """
+from typing import List
 from TrackMap import TrackMap
 from PlanStep import PlanStep
-from utility import euclidean_distance, find_closest_point, compute_middle_point
+from Utils import euclidean_distance, find_closest_point, compute_middle_point
 
 class Trajectory:
     """
@@ -13,7 +14,7 @@ class Trajectory:
     """
     def __init__(self, distance=euclidean_distance):
         self.distance = distance
-        self.trajectory = []
+        self.trajectory: List[PlanStep] = []
 
     def compute_trajectory(self, track_map:TrackMap):
         """
@@ -25,6 +26,14 @@ class Trajectory:
             Get the computed trajectory for the car
         """
         return self.trajectory
+
+    def set_trajectory(self, new_trajectory: List[PlanStep]):
+        """set new trajectory
+
+        Args:
+            List (PlanStep): new trajectory
+        """
+        self.trajectory = new_trajectory
 
 class MidTrajectory(Trajectory):
     """
@@ -39,5 +48,5 @@ class MidTrajectory(Trajectory):
 
         for left_point in cones_left:
             right_point = cones_right[find_closest_point(left_point, cones_right, self.distance)]
-            self.trajectory.append(PlanStep(compute_middle_point(left_point, right_point),
-                                            velocity=0))
+            self.trajectory.append(PlanStep(compute_middle_point(left_point, right_point)))
+    

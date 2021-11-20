@@ -1,25 +1,35 @@
 import os, sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from Track_Generator import Track
-from MidTrajectory import MidTrajectory
-from Utils import plot_track_map, plot_trajectory, end_plotting
+from Trajectory import MidTrajectory
+from GraphicUtility import plot_track_map, plot_trajectory, end_plotting
 from ComputeVelocities import compute_velocities
 from TrackMap import TrackMap
+from Utils import serialize_to_file, euclidean_distance_no_sqrt
+from ROSInterface import trajectory_to_ros
+import time
 
-custom_track = Track(10)
-custom_track.add_straight(20, 20)
-custom_track.add_curve(50, 180, 10)
+NAME_TEST = "TestCustomTrack1"
 
-track_map = TrackMap(custom_track.get_left_cones(), custom_track.get_right_cones())
+start_time = time.time()
 
-track_map.set_car_position(5, 0)
-trajectory = MidTrajectory()
-trajectory.compute_trajectory(track_map)
+custom_track = TrackMap()
+custom_track.load_track('tests/tracks/TarascoRace.json')
 
-new_trajectory = compute_velocities(trajectory.get_trajectory())
+custom_track.set_car_position((298, 235))
+trajectory = MidTrajectory(distance=euclidean_distance_no_sqrt)
+trajectory.compute_trajectory(custom_track)
 
-plot_track_map(track_map, new_figure=True)
-plot_trajectory(new_trajectory, new_figure=False)
+trajectory.set_trajectory(compute_velocities(trajectory.get_trajectory()))
+
+print("--- %s seconds ---" % (time.time() - start_time))
+
+plot_track_map(custom_track, new_figure=True)
+plot_trajectory(trajectory.get_trajectory(), new_figure=False)
+
+serialize_to_file(custom_track.get_left_cones(), custom_track.get_right_cones(), trajectory.get_trajectory(), "./tests/output/" + NAME_TEST)
+
+trajectory_to_ros(trajectory)
 
 end_plotting()
