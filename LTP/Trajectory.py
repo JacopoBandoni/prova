@@ -50,3 +50,25 @@ class MidTrajectory(Trajectory):
             right_point = cones_right[find_closest_point(left_point, cones_right, self.distance)]
             self.trajectory.append(PlanStep(compute_middle_point(left_point, right_point)))
     
+
+if __name__ == '__main__':
+
+    straight_track_map = CircleTrackMap(100, 10, 25, 5, 10)
+    straight_track_map.set_car_position(10, 10)
+    straight_track_map.show()
+    partial_trajectory = MidTrajectory()
+
+# class RandomTrajecory(Trajectory):
+#     """
+#         Trajectory class which consist to remain in the middle between left and right cones
+#     """
+#     def __init__(self, distance=euclidean_distance):
+#         super().__init__(distance=distance)
+
+#     def compute_trajectory(self, track_map: TrackMap):
+#         cones_left = track_map.get_left_cones()
+#         cones_right = track_map.get_right_cones()
+
+#         for left_point in cones_left:
+#             right_point = cones_right[find_closest_point(left_point, cones_right, self.distance)]
+#             self.trajectory.append(PlanStep(compute_middle_point(left_point, right_point)))

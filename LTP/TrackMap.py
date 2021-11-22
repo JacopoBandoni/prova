@@ -45,7 +45,7 @@ class TrackMap:
             self.right_cones.append((blue_cone['x'], blue_cone['y']))
         self.left_cones = remove_duplicates(self.left_cones)
         self.right_cones = remove_duplicates(self.right_cones)
-    
+
     def get_left_cones(self):
         """
             Obtain all Left cones inside the TrackMap
